@@ -1,0 +1,29 @@
+group = 'com.sequenceiq'
+version = '1.0'
+
+apply plugin: 'java'
+apply plugin: 'eclipse'
+apply plugin: 'idea'
+apply plugin: 'maven'
+
+sourceCompatibility = 1.7
+targetCompatibility = 1.7
+
+repositories {
+    mavenCentral()
+    maven { url "http://repo.hortonworks.com/content/repositories/releases" }
+    maven { url "https://repository.cloudera.com/artifactory/cloudera-repos" }
+    maven { url "http://conjars.org/repo/" }
+    maven { url "http://maven.sequenceiq.com/snapshots" }
+    maven { url "http://maven.sequenceiq.com/releases" }
+}
+
+dependencies {
+    compile("org.apache.hadoop:hadoop-mapreduce-client-core:${hadoopVersion}")
+    compile("org.apache.hadoop:hadoop-mapreduce-client-jobclient:${hadoopVersion}")
+    compile("org.apache.hadoop:hadoop-common:${hadoopVersion}")
+    compile("org.apache.hadoop:hadoop-hdfs:${hadoopVersion}")
+    compile('com.sequenceiq:ambari-client16:1.6.1') {
+        exclude group: 'org.slf4j';
+    }
+}
