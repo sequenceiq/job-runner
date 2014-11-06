@@ -68,15 +68,29 @@ public class AmbariConfigService {
         if (entry.getKey().startsWith("yarn.resourcemanager")) {
             int portStartIndex = result.indexOf(":");
             String internalAddress = result.substring(0, portStartIndex);
-            String publicAddress = ambariClient.resolveInternalHostName(internalAddress);
-            if (internalAddress.equals(publicAddress)) {
-                if (internalAddress.contains(AZURE_ADDRESS)) {
-                    publicAddress = internalAddress.substring(0, internalAddress.indexOf(".") + 1) + AZURE_ADDRESS;
-                }
-            }
+            String publicAddress = resolveInternalAddressToPublic(ambariClient, internalAddress);
             result = publicAddress + result.substring(portStartIndex);
+        } else if (entry.getKey().startsWith("fs.default")) {
+            String[] split = result.split(":");
+            String internalAddress = split[1].substring(2);
+            String publicAddress = resolveInternalAddressToPublic(ambariClient, internalAddress);
+            result = "hdfs://" + publicAddress + ":" + split[2];
+        } else if (entry.getKey().startsWith("mapreduce.jobhistory.address")){
+            String[] split = result.split(":");
+            String publicAddress = resolveInternalAddressToPublic(ambariClient, split[0]);
+            result = publicAddress + ":" + split[1];
         }
         return result;
+    }
+
+    private String resolveInternalAddressToPublic(AmbariClient ambariClient, String internalAddress) {
+        String publicAddress = ambariClient.resolveInternalHostName(internalAddress);
+        if (internalAddress.equals(publicAddress)) {
+            if (internalAddress.contains(AZURE_ADDRESS)) {
+                publicAddress = internalAddress.substring(0, internalAddress.indexOf(".") + 1) + AZURE_ADDRESS;
+            }
+        }
+        return publicAddress;
     }
 
     private void decorateConfiguration(Configuration configuration) {
@@ -84,6 +98,7 @@ public class AmbariConfigService {
         configuration.set(ConfigParam.ABSTRACT_FS_HDFS_IMPL, Hdfs.class.getName());
         configuration.set(ConfigParam.DFS_CLIENT_LEGACY_BLOCK_READER, "true");
         configuration.set(ConfigParam.USER_CLASSPATH_FIRST, "true");
+        configuration.set(ConfigParam.USE_DATANODE_HOSTNAME, "true");
     }
 
 }

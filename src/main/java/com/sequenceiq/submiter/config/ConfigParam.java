@@ -10,6 +10,7 @@ public final class ConfigParam {
     public static final String FS_DEFAULT_NAME = "fs.defaultFS";
     public static final String DFS_CLIENT_LEGACY_BLOCK_READER = "dfs.client.use.legacy.blockreader";
     public static final String HDFS_IMPL = "fs.hdfs.impl";
+    public static final String USE_DATANODE_HOSTNAME = "dfs.client.use.datanode.hostname";
 
     public static final String USER_CLASSPATH_FIRST = "mapreduce.job.user.classpath.first";
 
