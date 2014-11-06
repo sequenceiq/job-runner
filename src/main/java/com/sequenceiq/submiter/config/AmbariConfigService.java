@@ -13,6 +13,7 @@ import java.util.Map;
 
 public class AmbariConfigService {
     private static final Logger LOGGER = LoggerFactory.getLogger(AmbariConfigService.class);
+    private static final String AZURE_ADDRESS = "cloudapp.net";
 
     private final String ambariIp;
     private final String ambariPort;
@@ -37,7 +38,7 @@ public class AmbariConfigService {
             LOGGER.debug("Processing service: {}", serviceEntry.getKey());
             for (Map.Entry<String, String> configEntry : serviceEntry.getValue().entrySet()) {
                 if (configList.contains(configEntry.getKey())) {
-                    configuration.set(configEntry.getKey(), configEntry.getValue());
+                    configuration.set(configEntry.getKey(), replaceHostName(ambariClient, configEntry));
                     LOGGER.debug("Adding entry: {}", configEntry);
                 }
             }
@@ -62,6 +63,21 @@ public class AmbariConfigService {
             ConfigParam.MAPREDUCE_JOBHISTORY_INTERMEDIATE_DONE_DIR
     );
 
+    private String replaceHostName(AmbariClient ambariClient, Map.Entry<String, String> entry) {
+        String result = entry.getValue();
+        if (entry.getKey().startsWith("yarn.resourcemanager")) {
+            int portStartIndex = result.indexOf(":");
+            String internalAddress = result.substring(0, portStartIndex);
+            String publicAddress = ambariClient.resolveInternalHostName(internalAddress);
+            if (internalAddress.equals(publicAddress)) {
+                if (internalAddress.contains(AZURE_ADDRESS)) {
+                    publicAddress = internalAddress.substring(0, internalAddress.indexOf(".") + 1) + AZURE_ADDRESS;
+                }
+            }
+            result = publicAddress + result.substring(portStartIndex);
+        }
+        return result;
+    }
 
     private void decorateConfiguration(Configuration configuration) {
         configuration.set(ConfigParam.HDFS_IMPL, DistributedFileSystem.class.getName());
@@ -69,4 +85,5 @@ public class AmbariConfigService {
         configuration.set(ConfigParam.DFS_CLIENT_LEGACY_BLOCK_READER, "true");
         configuration.set(ConfigParam.USER_CLASSPATH_FIRST, "true");
     }
+
 }
