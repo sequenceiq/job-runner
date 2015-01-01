@@ -5,11 +5,16 @@ import com.twitter.scalding.Tool
 import org.apache.hadoop.conf.Configuration
 import org.apache.hadoop.util.ToolRunner
 import org.apache.hadoop.yarn.api.records.ApplicationReport
+import org.apache.mahout.common.AbstractJob
 import org.apache.spark.SparkConf
 
 object JobSubmitter {
   def main(args: Array[String]) {
     // TODO
+  }
+
+  def runMahoutJob(conf: Configuration, args: Array[String], job: AbstractJob): Unit = {
+    ToolRunner.run(conf, job, args)
   }
 
   def runScaldingJob(conf: Configuration, args: Array[String]): Unit = {

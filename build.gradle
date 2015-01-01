@@ -1,5 +1,5 @@
 group = 'com.sequenceiq'
-version = '1.0'
+version = '0.1'
 
 apply plugin: 'scala'
 apply plugin: 'eclipse'
@@ -18,6 +18,12 @@ repositories {
     maven { url "http://maven.sequenceiq.com/releases" }
 }
 
+configurations {
+    deployerJars
+    all*.exclude group: 'commons-lang', module: 'commons-lang', version: '2.6'
+    all*.exclude group: 'org.slf4j', module: 'slf4j-log4j12'
+}
+
 tasks.withType(ScalaCompile) {
     targetCompatibility = 1.7
     scalaCompileOptions.deprecation = false
@@ -32,6 +38,20 @@ def versionOverrides = [
         "org.apache.hadoop:hadoop-yarn-common": "${hadoopVersion}",
         "org.apache.hadoop:hadoop-yarn-server-web-proxy" : "${hadoopVersion}"
 ]
+
+uploadArchives {
+    repositories {
+        mavenDeployer {
+            configuration = configurations.deployerJars
+            repository(url: "s3://maven.sequenceiq.com/releases") {
+                authentication(userName: "$System.env.aws_access_key_id", passphrase: "$System.env.aws_secret_access_key")
+            }
+            snapshotRepository(url: "s3://maven.sequenceiq.com/snapshots") {
+                authentication(userName: "$System.env.aws_access_key_id", passphrase: "$System.env.aws_secret_access_key")
+            }
+        }
+    }
+}
 
 configurations.all {
 
@@ -70,8 +90,11 @@ dependencies {
     compile("org.apache.spark:spark-streaming_2.10:${sparkVersion}")
     compile("org.apache.spark:spark-graphx_2.10:${sparkVersion}")
     compile("org.apache.spark:spark-sql_2.10:${sparkVersion}")
+    // Mahout
+    compile("org.apache.mahout:mahout-mrlegacy:${mahoutVersion}") { exclude group: 'org.apache.hadoop' }
     // Hadoop
     compile("org.apache.hadoop:hadoop-client:${hadoopVersion}") {
         exclude group: 'javax.servlet';
     }
+    deployerJars("org.springframework.build.aws:org.springframework.build.aws.maven:3.0.0.RELEASE")
 }
