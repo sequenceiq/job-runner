@@ -1,7 +1,7 @@
 group = 'com.sequenceiq'
 version = '1.0'
 
-apply plugin: 'java'
+apply plugin: 'scala'
 apply plugin: 'eclipse'
 apply plugin: 'idea'
 apply plugin: 'maven'
@@ -18,12 +18,60 @@ repositories {
     maven { url "http://maven.sequenceiq.com/releases" }
 }
 
+tasks.withType(ScalaCompile) {
+    targetCompatibility = 1.7
+    scalaCompileOptions.deprecation = false
+    scalaCompileOptions.unchecked = false
+    scalaCompileOptions.additionalParameters = ['-nowarn']
+    options.warnings = false
+    options.compilerArgs = ["-Xmax-classfile-name 130"]
+}
+
+def versionOverrides = [
+        "org.apache.hadoop:hadoop-yarn-api": "${hadoopVersion}",
+        "org.apache.hadoop:hadoop-yarn-common": "${hadoopVersion}",
+        "org.apache.hadoop:hadoop-yarn-server-web-proxy" : "${hadoopVersion}"
+]
+
+configurations.all {
+
+    resolutionStrategy.eachDependency { DependencyResolveDetails details ->
+
+        def overrideVersion = versionOverrides[details.requested.group + ":" + details.requested.name]
+
+        if (overrideVersion != null && details.requested.version != overrideVersion) {
+            logger.info "Overriding dependency ${details.requested.group}:${details.requested.name} version ${details.requested.version} --> $overrideVersion"
+            details.useVersion overrideVersion
+        }
+    }
+}
+
 dependencies {
+    compile "org.scala-lang:scala-library:${scalaVersion}"
     compile("org.apache.hadoop:hadoop-mapreduce-client-core:${hadoopVersion}")
     compile("org.apache.hadoop:hadoop-mapreduce-client-jobclient:${hadoopVersion}")
     compile("org.apache.hadoop:hadoop-common:${hadoopVersion}")
     compile("org.apache.hadoop:hadoop-hdfs:${hadoopVersion}")
+    // Ambari
     compile('com.sequenceiq:ambari-client16:1.6.1') {
         exclude group: 'org.slf4j';
+    }
+    // Cascading & Scalding
+    compile( "cascading:cascading-core:${cascadingVersion}")
+    compile("com.twitter:scalding-core_2.10:${scaldingVersion}") {
+        exclude group: 'cascading';
+    }
+    // Spark
+    compile("org.apache.spark:spark-core_2.10:${sparkVersion}")
+    compile("org.apache.spark:spark-yarn_2.10:${sparkVersion}")
+    compile("org.apache.spark:spark-mllib_2.10:${sparkVersion}")
+    compile("org.apache.spark:spark-bagel_2.10:${sparkVersion}")
+    compile("org.apache.spark:spark-repl_2.10:${sparkVersion}")
+    compile("org.apache.spark:spark-streaming_2.10:${sparkVersion}")
+    compile("org.apache.spark:spark-graphx_2.10:${sparkVersion}")
+    compile("org.apache.spark:spark-sql_2.10:${sparkVersion}")
+    // Hadoop
+    compile("org.apache.hadoop:hadoop-client:${hadoopVersion}") {
+        exclude group: 'javax.servlet';
     }
 }
