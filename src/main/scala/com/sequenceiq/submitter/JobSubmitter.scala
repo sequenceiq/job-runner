@@ -13,12 +13,12 @@ object JobSubmitter {
     // TODO
   }
 
-  def runMahoutJob(conf: Configuration, args: Array[String], job: AbstractJob): Unit = {
-    ToolRunner.run(conf, job, args)
+  def runMapReduceJob(conf: Configuration, tool: Tool, args: Array[String]): Unit = {
+    ToolRunner.run(conf, tool, args)
   }
 
   def runScaldingJob(conf: Configuration, args: Array[String]): Unit = {
-    ToolRunner.run(conf, new Tool, args)
+    runMapReduceJob(conf, new Tool, args)
   }
 
   def runSparkJob(conf: Configuration, sparkConf: SparkConf, clientArgs: Array[String], async: Boolean): ApplicationReport = {
