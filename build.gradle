@@ -90,8 +90,6 @@ dependencies {
     compile("org.apache.spark:spark-streaming_2.10:${sparkVersion}")
     compile("org.apache.spark:spark-graphx_2.10:${sparkVersion}")
     compile("org.apache.spark:spark-sql_2.10:${sparkVersion}")
-    // Mahout
-    compile("org.apache.mahout:mahout-mrlegacy:${mahoutVersion}") { exclude group: 'org.apache.hadoop' }
     // Hadoop
     compile("org.apache.hadoop:hadoop-client:${hadoopVersion}") {
         exclude group: 'javax.servlet';
