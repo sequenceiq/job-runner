@@ -12,7 +12,6 @@ targetCompatibility = 1.7
 repositories {
     mavenCentral()
     maven { url "http://repo.hortonworks.com/content/repositories/releases" }
-    maven { url "https://repository.cloudera.com/artifactory/cloudera-repos" }
     maven { url "http://conjars.org/repo/" }
     maven { url "http://maven.sequenceiq.com/snapshots" }
     maven { url "http://maven.sequenceiq.com/releases" }
