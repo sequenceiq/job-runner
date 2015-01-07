@@ -1,10 +1,21 @@
 group = 'com.sequenceiq'
 version = '0.1'
 
+buildscript {
+    repositories {
+        mavenCentral()
+        jcenter()
+    }
+    dependencies {
+        classpath "com.smokejumperit.gradle.license:Gradle-License-Report:0.0.2"
+    }
+}
+
 apply plugin: 'scala'
 apply plugin: 'eclipse'
 apply plugin: 'idea'
 apply plugin: 'maven'
+apply plugin: 'license-report'
 
 sourceCompatibility = 1.7
 targetCompatibility = 1.7
