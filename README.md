@@ -2,7 +2,7 @@ WORK IN PROGRESS !!!
 =============
 Service for submitting apps to cluster (through Ambari Service)
 
-Usage: ./build.sh <mr/scalding/spark/all> <uberjar: true/false>
+Usage: ./build.sh mr/scalding/spark/all true/false - buildType and uberJar
 
 Example
 =============
