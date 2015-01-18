@@ -1,8 +1,9 @@
-package com.sequenceiq.submitter.config
+package com.sequenceiq.jobrunner.config
 
 import com.sequenceiq.ambari.client.AmbariClient
 import org.apache.hadoop.conf.Configuration
 import org.slf4j.LoggerFactory
+
 import scala.collection.JavaConverters._
 
 class AmbariConfigService(val ambariIp: String, val ambariPort: String, val ambariUsername: String, val ambariPassword: String,

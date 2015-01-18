@@ -1,0 +1,7 @@
+include 'job-runner-mapreduce'
+include 'job-runner-scalding'
+include 'job-runner-spark'
+include 'job-runner-common'
+
+rootProject.name = 'job-runner'
+

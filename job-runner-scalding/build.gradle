@@ -1,0 +1,41 @@
+apply plugin: 'scala'
+
+dependencies {
+    compile("org.scala-lang:scala-library:${scalaVersion}")
+    // Cascading & Scalding
+    compile("cascading:cascading-core:${cascadingVersion}")
+    compile("com.twitter:scalding-core_2.10:${scaldingVersion}") {
+        exclude group: 'cascading';
+    }
+}
+
+tasks.withType(ScalaCompile) {
+    targetCompatibility = 1.7
+    scalaCompileOptions.deprecation = false
+    scalaCompileOptions.unchecked = false
+    scalaCompileOptions.additionalParameters = ['-nowarn']
+    options.warnings = false
+    options.compilerArgs = ["-Xmax-classfile-name 130"]
+}
+
+task uberjar(type: Jar) {
+    from(configurations.compile.collect { it.isDirectory() ? it : zipTree(it) }) {
+        exclude "META-INF/*.SF"
+        exclude "META-INF/*.DSA"
+        exclude "META-INF/*.RSA"
+        exclude "org/slf4j/**"
+        exclude "META-INF/*LICENSE*"
+        exclude "META-INF/*license*"
+        exclude "META-INF/license/**"
+        exclude "META-INF/license"
+        exclude "*LICENSE*"
+        exclude "com/twitter/bijection/**"
+        exclude "org/apache/hadoop/**"
+        exclude "com/fasterxml/**"
+        exclude "javax/servlet/**"
+    }
+
+    manifest {
+        attributes 'Main-Class': 'com.sequenceiq.jobrunner.ScaldingRunner', 'Implementation-Title': 'job-runner-scalding', 'Implementation-Version': version
+    }
+}

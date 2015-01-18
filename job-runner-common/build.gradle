@@ -1,0 +1,18 @@
+apply plugin: 'scala'
+
+dependencies {
+    compile("org.scala-lang:scala-library:${scalaVersion}")
+    // Ambari
+    compile('com.sequenceiq:ambari-client16:1.6.1') {
+        exclude group: 'org.slf4j';
+    }
+}
+
+tasks.withType(ScalaCompile) {
+    targetCompatibility = 1.7
+    scalaCompileOptions.deprecation = false
+    scalaCompileOptions.unchecked = false
+    scalaCompileOptions.additionalParameters = ['-nowarn']
+    options.warnings = false
+    options.compilerArgs = ["-Xmax-classfile-name 130"]
+}

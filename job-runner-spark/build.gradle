@@ -1,0 +1,48 @@
+apply plugin: 'scala'
+
+dependencies {
+    compile("org.scala-lang:scala-library:${scalaVersion}")
+    // Spark
+    compile("org.apache.spark:spark-core_2.10:${sparkVersion}")
+    compile("org.apache.spark:spark-yarn_2.10:${sparkVersion}")
+    compile("org.apache.spark:spark-mllib_2.10:${sparkVersion}")
+    compile("org.apache.spark:spark-bagel_2.10:${sparkVersion}")
+    compile("org.apache.spark:spark-repl_2.10:${sparkVersion}")
+    compile("org.apache.spark:spark-streaming_2.10:${sparkVersion}")
+    compile("org.apache.spark:spark-graphx_2.10:${sparkVersion}")
+    compile("org.apache.spark:spark-sql_2.10:${sparkVersion}")
+}
+
+tasks.withType(ScalaCompile) {
+    targetCompatibility = 1.7
+    scalaCompileOptions.deprecation = false
+    scalaCompileOptions.unchecked = false
+    scalaCompileOptions.additionalParameters = ['-nowarn']
+    options.warnings = false
+    options.compilerArgs = ["-Xmax-classfile-name 130"]
+}
+
+task uberjar(type: Jar) {
+    
+    from(configurations.compile.collect { it.isDirectory() ? it : zipTree(it) }) {
+        exclude "META-INF/*.SF"
+        exclude "META-INF/*.DSA"
+        exclude "META-INF/*.RSA"
+        exclude "META-INF/*LICENSE*"
+        exclude "META-INF/*license*"
+        exclude "META-INF/license/**"
+        exclude "META-INF/license"
+        exclude "META-INF/NOTICE"
+        exclude "META-INF/DEPENDENCIES"
+        exclude "*LICENSE*"
+        exclude "reference.conf"
+    }
+
+    manifest {
+        attributes 'Main-Class': 'com.sequenceiq.jobrunner.SparkRunner', 'Implementation-Title':'job-runner-spark', 'Implementation-Version': version
+    }
+}
+
+tasks.withType(Zip) {
+    zip64 = true
+}
