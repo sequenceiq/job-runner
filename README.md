@@ -10,6 +10,6 @@ Example
 # build scalding uberjar
 ./build.sh scalding true
 
-java -cp myJobJar.jar:job-runner-scalding-0.1.jar com.sequenceiq.jobrunner.ScaldingRunner com.example.MyJob --input /sample --output /samlpleOutput
+java -cp myJobJar.jar:job-runner-scalding-0.1.jar com.sequenceiq.jobrunner.ScaldingRunner com.example.MyJob --input /sample --output /sampleOutput
 ```
 
